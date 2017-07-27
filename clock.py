@@ -40,3 +40,39 @@ class Clock(object):
 
     def __str__(self):
         return "{0:02d}:{1:02d}:{2:02d}".format(self._hours, self.__minutes, self.__seconds)
+
+    def tick(self):
+        """
+        This method lets the clock "tick", this means that the
+        internal time will be advanced by one second.
+
+        Examples:
+        ">>> x = Clock(12,59,59)"
+        "">>> print(x)
+        12:59:59
+        ''>>> x.tick()
+        ''>>> print(x)
+        13:00:00
+        ''>>> x.tick()
+        ''>>> print(x)
+        13:00:01
+        """
+        if self.__seconds == 59:
+            self.__seconds = 0
+            if self.__minutes == 59:
+                self.__minutes = 0
+                if self._hours == 23:
+                    self._hours = 0
+                else:
+                    self._hours += 1
+            else:
+                self.__minutes += 1
+        else:
+            self.__seconds += 1
+
+
+if __name__ == "__main__":
+    x = Clock(23,59,59)
+    print(x)
+    x.tick()
+    print(x)
