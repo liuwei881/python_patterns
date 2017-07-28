@@ -29,8 +29,8 @@ class Pizza:
 
 
 class MargaritaBuilder:
-    def __init__(self):
-        self.pizza = Pizza('margarita')
+    def __init__(self, name):
+        self.pizza = Pizza(name)
         self.progress = PizzaProgress.queued
         self.baking_time = 5
 
@@ -59,8 +59,8 @@ class MargaritaBuilder:
 
 
 class CreamyBaconBuilder:
-    def __init__(self):
-        self.pizza = Pizza('creamy bacon')
+    def __init__(self, name):
+        self.pizza = Pizza(name)
         self.progress = PizzaProgress.queued
         self.baking_time = 7
 
@@ -93,6 +93,33 @@ class CreamyBaconBuilder:
         print('your creamy bacon is ready')
 
 
+class HawaiianBuilder(MargaritaBuilder, CreamyBaconBuilder):
+    def __init__(self, name):
+        self.baking_time = 7
+        MargaritaBuilder.__init__(self, name)
+        CreamyBaconBuilder.__init__(self, name)
+
+    def prepare_dough(self):
+        self.progress = PizzaProgress.preparation
+        MargaritaBuilder.prepare_dough(self)
+
+    def add_sauce(self):
+        print('adding the hawaiian sauce to your hawaiian')
+        self.pizza.sauce = PizzaSauce.tomato
+        time.sleep(STEP_DELAY)
+        print('done with the hawaiian sauce')
+
+    def add_topping(self):
+        CreamyBaconBuilder.add_topping(self)
+
+    def bake(self):
+        self.progress = PizzaProgress.baking
+        print('baking your Hawaiian for {} seconds'.format(self.baking_time))
+        time.sleep(self.baking_time)
+        self.progress = PizzaProgress.ready
+        print('your Hawaiian is ready')
+
+
 class Waiter:
     def __init__(self):
         self.builder = None
@@ -108,8 +135,9 @@ class Waiter:
 
 def validate_style(builders):
     try:
-        pizza_style = input('What pizza would you like, [m]argarita or [c]reamy bacon?')
-        builder = builders[pizza_style]()
+        pizza_style = input('What pizza would you like, [m]argarita or [c]reamy bacon or [h]awaiian?')
+        b = {'m': 'margarita', 'c': 'creamy', 'h': 'hawaiian'}
+        builder = builders[pizza_style](b[pizza_style])
         valid_input = True
     except KeyError as err:
         print('Sorry, only margarita (key m) and creamy bacon (key c) are available')
@@ -118,7 +146,7 @@ def validate_style(builders):
 
 
 def main():
-    builders = dict(m=MargaritaBuilder, c=CreamyBaconBuilder)
+    builders = dict(m=MargaritaBuilder, c=CreamyBaconBuilder, h=HawaiianBuilder)
     valid_input = False
     while not valid_input:
         valid_input, builders = validate_style(builders)
